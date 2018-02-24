@@ -65,7 +65,7 @@ class ThreadBrute(Thread):
 				path = self.queue.get()
 				for ext in self.EXT:
 					# add ext to path
-					_path_ = "%s%s"%(path,exit)
+					_path_ = "%s%s"%(path,ext)
 					# check url path
 					url = CPath(self.target,_path_)
 					# send request
