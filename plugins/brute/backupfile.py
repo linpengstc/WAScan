@@ -48,7 +48,7 @@ class backupfile(Request):
 class ThreadBrute(Thread):
 	""" Bruteforcer """
 	get = "GET"
-	EXT = ('.zip','.bak','.backup','.gz','.tar.gz','1','2')
+	EXT = ['','.zip','.bak','.backup','.gz','.tar.gz','1','2']
 	def __init__(self,target,queue,request):
 		Thread.__init__(self)
 		self.setDaemon = True
