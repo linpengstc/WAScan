@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 #
 # @name:    Wascan - Web Application Scanner
@@ -15,7 +15,6 @@ from lib.handler.disclosure import *
 from lib.handler.fingerprint import *
 
 def FullScan(kwargs,url,data):
-	if '?' in url:
-		Attacks(kwargs,url,data)
-	Disclosure(kwargs,url,data)
-	null()
+    if '?' in url:
+        Attacks(kwargs,url,data)
+    Disclosure(kwargs,url,data)
