@@ -6,17 +6,17 @@
 # @author:  Momo Outaadi (M4ll0k)
 # @license: See the file 'LICENSE.txt
 
-from lib.utils.printer import *
-from lib.request.crawler import  *
+from lib.utils.printer import info
+from lib.request.crawler import SCrawler
 
 class Crawler:
-	""" cralwer """
-	def run(self,kwargs,url,data):
-		info("Starting crawler...")
-		links = []
-		links.append(url)
-		for link in links:
-			for k in SCrawler(kwargs,url,data).run():
-				if k not in links:
-					links.append(k)
-		return links
+    """ cralwer """
+    def run(self, kwargs, url, data):
+        info("Starting crawler...")
+        links = []
+        links.append(url)
+        for link in links:
+            for k in SCrawler(kwargs, url, data).run():
+                if k not in links:
+                    links.append(k)
+        return links

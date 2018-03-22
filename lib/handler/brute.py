@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 #
 # @name:    Wascan - Web Application Scanner
@@ -13,11 +13,13 @@ from plugins.brute.backupfile import *
 from plugins.brute.commondir import *
 from plugins.brute.commonfile import *
 
-def Brute(kwargs,url,data):
-	backdoor(kwargs,url,data).run()
-	backupdir(kwargs,url,data).run()
-	backupfile(kwargs,url,data).run()
-	commonfile(kwargs,url,data).run()
-	commondir(kwargs,url,data).run()
-	adminpanel(kwargs,url,data).run()
-	null()
+
+def Brute(kwargs, url, data):
+    info("Starting brute module...")
+    backdoor(kwargs, url, data).run()
+    backupdir(kwargs, url, data).run()
+    backupfile(kwargs, url, data).run()
+    commonfile(kwargs, url, data).run()
+    commondir(kwargs, url, data).run()
+    adminpanel(kwargs, url, data).run()
+    null()

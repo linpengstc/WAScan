@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 #
 # @name:    Wascan - Web Application Scanner
@@ -13,11 +13,12 @@ from plugins.audit.phpinfo import *
 from plugins.audit.robots import *
 from lib.utils.printer import *
 
-def Audit(kwargs,url,data):
-	info("Starting audit module...")
-	xst(kwargs,url,data).run()
-	apache(kwargs,url,data).run()
-	#dav(kwargs,url,data).run()
-	phpinfo(kwargs,url,data).run()
-	robots(kwargs,url,data).run()
-	null()
+
+def Audit(kwargs, url, data):
+    info("Starting audit module...")
+    xst(kwargs, url, data).run()
+    apache(kwargs, url, data).run()
+    # dav(kwargs, url, data).run()
+    phpinfo(kwargs, url, data).run()
+    robots(kwargs, url, data).run()
+    null()
