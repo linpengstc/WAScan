@@ -22,7 +22,7 @@
 
 import sys
 import getopt
-
+import os
 from lib.utils.printer import *
 from lib.utils.usage import *
 from lib.utils.check import *
@@ -65,7 +65,8 @@ class wascan(object):
 			if opt in ('-d','--data'):kwargs['data'] = arg 
 			if opt in ('-m','--method'):kwargs['method'] = arg
 			if opt in ('-h','--host'):kwargs['headers'].update({'Host':arg}) 
-			if opt in ('-R','--referer'):kwargs['headers'].update({'Referer':arg})
+			# if opt in ('-R','--referer'):kwargs['headers'].update({'Referer':arg})
+			if opt in ('-R', '--referer'):kwargs['referer'] = arg
 			if opt in ('-a','--auth'):kwargs['auth'] = CAuth(arg) 
 			if opt in ('-A','--agent'):kwargs['agent'] = arg 
 			if opt in ('-C','--cookie'):kwargs['cookie'] = arg 
@@ -88,6 +89,7 @@ class wascan(object):
 			if scan == 2:
 				Audit(kwargs,url,kwargs['data'])
 			if scan == 3:
+				# 路径爆破
 				Brute(kwargs,url,kwargs['data'])
 			if scan == 4:
 				Disclosure(kwargs,url,kwargs['data']).run()
@@ -96,13 +98,16 @@ class wascan(object):
 				info('Starting full scan module...')
 				Fingerprint(kwargs,url).run()
 				for u in Crawler().run(kwargs,url,kwargs['data']):
-					if type(u[0]) is tuple:
-						kwargs['data'] = u[1]
-						FullScan(kwargs,u[0],kwargs['data'])
+					if type(u) is tuple:
+						_kwargs = kwargs.copy()
+						_kwargs['data'] = u[1]
+						_kwargs['method'] = 'post'
+						FullScan(_kwargs,u[0],_kwargs['data'])
 					else:
 						FullScan(kwargs,u,kwargs['data'])
 				Audit(kwargs,parse.netloc,kwargs['data'])
 				Brute(kwargs,parse.netloc,kwargs['data'])
+			
 		except WascanUnboundLocalError,e:
 			pass
 
