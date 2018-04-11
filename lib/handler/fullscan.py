@@ -15,6 +15,7 @@ from lib.handler.disclosure import *
 from lib.handler.fingerprint import *
 
 def FullScan(kwargs,url,data):
-    if '?' in url:
-        Attacks(kwargs,url,data)
+    # 如果是非post格式，并且get请求中不带参数
+    # if '?' in url and 'data' not in kargs:
+    Attacks(kwargs,url,data)
     Disclosure(kwargs,url,data)

@@ -35,7 +35,7 @@ class xss(Request):
 					# send request
 					req = self.Send(url=self.url,method=self.post,data=data)
 					# search payload in req.content
-					if search(payload,req.content):
+					if req.headers['Content-Type'] == "text/html" and search(payload,req.content):
 						URL = req.url 
 						DATA = data 
 						PAYLOAD = payload
@@ -48,7 +48,7 @@ class xss(Request):
 						# send request 
 						req = self.Send(url=url,method=self.get)
 						# search payload in req.content
-						if search(payload,req.content):
+						if req.headers['Content-Type'] == "text/html" and search(payload,req.content):
 							URL = url
 							PAYLOAD = payload
 							break

@@ -23,8 +23,6 @@ class WascanInputException(Exception):
 class WascanGenericException(Exception):
 	pass
 
-class WascanConnectionException(HTTPError):
-	pass
 
 class WascanKeyboardInterrupt(KeyboardInterrupt):
 	pass

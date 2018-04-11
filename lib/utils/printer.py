@@ -9,7 +9,14 @@
 from lib.utils.colors import *
 from lib.utils.unicode import *
 
+
+def save(string, flag):
+	output_file = open("out/wascan/wascan.result", 'a')
+	output_file.write("{} {}\n".format(flag,string))
+	output_file.close()
+
 def plus(string,flag="[+]"):
+	save(string, flag)
 	print "{}{}{} {}{}{}".format(
 		GREEN%(0),flag,RESET,
 		WHITE%(0),ucode(string),RESET
@@ -39,6 +46,7 @@ def info(string,flag="[i]"):
 		)
 
 def more(string,flag="|"):
+	save(string, flag)
 	print " {}{}{}  {}{}{}".format(
 		WHITE%(0),flag,RESET,
 		WHITE%(0),ucode(string),RESET

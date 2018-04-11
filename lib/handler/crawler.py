@@ -15,8 +15,9 @@ class Crawler:
         info("Starting crawler...")
         links = []
         links.append(url)
-        for link in links:
-            for k in SCrawler(kwargs, url, data).run():
-                if k not in links:
-                    links.append(k)
+        # for link in links:
+        for k in SCrawler(kwargs, url, data).run():
+            if k not in links:
+                # 判断link是否重复，以及是否和扫描url是否相同
+                links.append(k)
         return links

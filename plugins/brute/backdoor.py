@@ -14,7 +14,6 @@ from lib.utils.printer import *
 from lib.utils.readfile import *
 from lib.request.request import *
 from lib.utils.settings import MAX
-from urllib2 import HTTPError
 
 class backdoor(Request):
 	""" Search common backdoor """

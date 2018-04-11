@@ -37,9 +37,6 @@ class preplace:
 			self.get()
 		elif "?" not in self.url and self.data != None:
 			self.post()
-		else:
-			self.get()
-			self.post()
 		return self._params
 
 class padd:
@@ -70,8 +67,5 @@ class padd:
 		if "?" in self.url and self.data == None:
 			self.get()
 		elif "?" not in self.url and self.data != None:
-			self.post()
-		else:
-			self.get()
 			self.post()
 		return self._params

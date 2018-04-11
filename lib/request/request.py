@@ -10,7 +10,7 @@ import ssl
 import socket
 import urllib2
 from lib.utils.printer import *
-
+import requests
 if hasattr(ssl, '_create_unverified_context'): 
     ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -40,6 +40,7 @@ class Request(object):
 		proxy = None if "proxy" not in _dict_ else _dict_["proxy"]
 		pauth = None if "pauth" not in _dict_ else _dict_["pauth"]
 		cookie = None if "cookie" not in _dict_ else _dict_["cookie"]
+		referer = None if "referer" not in _dict_ else _dict_["referer"]
 		timeout = None if "timeout" not in _dict_ else _dict_["timeout"]
 		redirect = True if "redirect" not in _dict_ else _dict_["redirect"]
 		_headers_ = None if "headers" not in _dict_ else _dict_["headers"]
@@ -52,6 +53,7 @@ class Request(object):
 			else:
 				method = method.upper()
 		# set data
+
 		if data is None:
 			if _data_ != None:
 				data = _data_
@@ -65,6 +67,9 @@ class Request(object):
 		# add user-agent header value
 		if 'User-Agent' not in headers:
 			headers['User-Agent'] = agent
+
+		if 'Referer' not in headers and referer:
+			headers['Referer'] = referer
 		# _headers_ add to headers
 		if isinstance(_headers_,dict):
 			headers.update(_headers_)
@@ -73,53 +78,42 @@ class Request(object):
 			if ':' in  auth:
 				authorization = ("%s:%s"%(BasicAuthCredentials(auth))).encode('base64')
 				headers['Authorization'] = "Basic %s"%(authorization.replace('\n',''))
-		# process proxy basic authorization
 		if pauth != None:
 			if ':' in pauth:
 				proxy_authorization = ("%s:%s"%(BasicAuthCredentials(pauth))).encode('base64')
 				headers['Proxy-authorization'] = "Basic %s"%(proxy_authorization.replace('\n',''))
-		# process socket timeout
-		if timeout != None:
-			socket.setdefaulttimeout(timeout)
-		# set handlers
-		# handled http and https 
-		handlers = [urllib2.HTTPHandler(),urllib2.HTTPSHandler()]
-		# process cookie handler
+		request_args = {}
+
+		if timeout:
+			request_args['timeout'] = float(timeout)
+		
 		if 'Cookie' not in headers:
 			if cookie != None and cookie != "":
 				headers['Cookie'] = cookie
 			# handlers.append(HTTPCookieProcessor(cookie))
 		# process redirect
 		if redirect != True:
-			handlers.append(NoRedirectHandler)
+			request_args['allow_redirects'] = False
 		# process proxies
 		if proxy:
-			proxies = ProxyDict(proxy)
-			handlers.append(urllib2.ProxyHandler(proxies))
-		# install opener
-		opener = urllib2.build_opener(*handlers)
-		urllib2.install_opener(opener)
-		# process method
-		# method get 
-		if method == "GET":
-			if data: url = "%s?%s"%(url,data)
-			req = urllib2.Request(url,headers=headers)
-		# other methods
-		elif method == "POST":
-			req = urllib2.Request(url,data=data,headers=headers)
-		# other methods
-		else:
-			req = urllib2.Request(url,headers=headers)
-			req.get_method = lambda : method
-		# response object
+			request_args['proxies'] = ProxyDict(proxy)
+		request_args['headers'] = headers
+		
+		# 去除字段前后空格
+		for k in headers:
+			headers[k] = headers[k].strip()
+
 		try:
-			resp = urllib2.urlopen(req)
-		except urllib2.HTTPError,e:			
-			resp = e
-		except socket.error,e:
-			exit(warn('Error: %s'%e))
-		except urllib2.URLError,e:
-			exit(warn('Error: %s'%e))
+			if method == "GET":
+				resp = requests.get(url, **request_args)
+			elif method == "POST":
+				if data:
+					request_args['data'] = data
+				resp = requests.post(url, **request_args)
+			# other methods
+		except Exception as e:
+			import traceback
+			traceback.print_exc(e)
 		return ResponseObject(resp)
 
 class NoRedirectHandler(urllib2.HTTPRedirectHandler):
@@ -133,10 +127,10 @@ class ResponseObject(object):
 	"""docstring for ResponseObject"""
 	def __init__(self,resp):
 		# get content
-		self.content = resp.read()
+		self.content = resp.content
 		# get url 
-		self.url = resp.geturl()
+		self.url = resp.url
 		# get status code
-		self.code = resp.getcode()
+		self.code = resp.status_code
 		# get headers
-		self.headers = resp.headers.dict
+		self.headers = resp.headers

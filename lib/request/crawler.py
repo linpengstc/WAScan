@@ -12,7 +12,7 @@ from lib.utils.unicode import *
 from urllib import unquote_plus
 from re import search,findall,I
 from lib.request.request import *
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from urlparse import urlsplit,urlunparse
 
 EXCLUDED_MEDIA_EXTENSIONS = (
@@ -38,12 +38,17 @@ class SCrawler(Request):
 		# send request
 		resp = self.Send(url=self.url,data=self.data)
 		self.content = resp.content
-		self.extract 
+		self.extract
 		for link in self.all_links:
-			r_link = self.absolute(link)
-			if r_link:
-				if r_link not in self.ok_links:
-					self.ok_links.append(r_link)
+			if type(link) == tuple:
+				l = self.absolute(link[0])
+				if l and (l,link[1]) not in self.ok_links:
+					self.ok_links.append((l,link[1]))
+			else :
+				l = self.absolute(link)
+				if l and l not in self.ok_links:
+					self.ok_links.append(l)
+		print self.ok_links
 		return self.ok_links
 
 	@property
@@ -65,7 +70,7 @@ class SCrawler(Request):
 
 	@property
 	def soup(self):
-		soup = BeautifulSoup(self.content)
+		soup = BeautifulSoup(self.content, "lxml")
 		return soup
 
 	def check_ext(self,link):
@@ -75,7 +80,7 @@ class SCrawler(Request):
 
 	def check_method(self,method):
 		"""check method"""
-		if method != []:
+		if method == []:
 			return "GET"
 		elif method != []:
 			return method[0]
@@ -96,7 +101,11 @@ class SCrawler(Request):
 			if action[0] in url:
 				self.check_url(url)
 			else:
-				return self.check_url(CPath(url+action[0]))
+				if url.endswith("/") or "/" not in url:
+					u = url
+				else:
+					u = "/".join(url.split("/")[0:-1])
+				return self.check_url(CPath(u ,action[0]))
 
 	def check_name_value(self,string):
 		""" check form name and value """
@@ -112,46 +121,80 @@ class SCrawler(Request):
 				self.forms.append(form)
 		for form in self.forms:
 			if form != "" and form != None:
-				return self.extract_form(str(form),self.url)
+				return self.extract_form(form,self.url)
 
 	def extract_form(self,form,url):
-		""" extract form """
-		query = []
-		action = ""
-		method = ""
 		try:
-			# method
-			method += self.check_method(findall(r'method=[\'\"](.+?)[\'\"]',form,I))
-			# action
-			action += self.check_action((findall(r'method=[\'\"](.+?)[\'\"]',form,I),url))
-		except Exception,e:
-			pass
-		for inputs in form.split('/>'):
-			if search(r'\<input',inputs,I):
-				try:
-					# name
-					name = self.check_name_value(findall(r'name=[\'\"](.+?)[\'\"]',inputs,I))
-					# value
-					value = self.check_name_value(findall(r'value=[\'\"](.+?)[\'\"]',inputs,I))
-					name_value = "%s=%s"%(name,value)
-					if len(query) == 0:query.append(name_value)
-					if len(query) == 1:query[0] += "&%s"%(name_value) 
-				except Exception,e:
-					pass
-		if action:
+			print type(form)
+			if not form.has_attr('method') and not form.has_attr('action') :
+				return
+
+			method = form['method']
+			action = form['action']
+			query = []
+			inputs = form.findAll('input')
+
+			for i in inputs:
+				if not i.has_attr('name'):
+					continue
+				q = i['name']
+				if not i.has_attr('value'):
+					i['value'] = 'TEST'
+				query.append(i['name'] + "=" + i['value'])
+			query_str = "&".join(query)
 			if method.lower() == "get":
 				if query != []:
-					return "%s?%s"%(action,query[0])
+					return "%s?%s"%(action,query_str)
 				return action
 			elif method.lower() == "post":
 				if query != []:
-					return action,query[0]
+					return action,query_str
 				return action
+		except Exception as e:
+			import traceback
+			traceback.print_exc(e)
+		# """ extract form """
+		# query = []
+		# action = ""
+		# method = ""
+		# try:
+		# 	# method
+		# 	method += self.check_method(findall(r'method=[\'\"](.+?)[\'\"]',form,I))
+		# 	# action
+		# 	action += self.check_action(findall(r'action=[\'\"](.+?)[\'\"]',form,I),url)
+		# except Exception,e:
+		# 	import traceback
+		# 	traceback.print_exc(e)
+		# for inputs in form.split('/>'):
+		# 	if search(r'\<input',inputs,I):
+		# 		try:
+		# 			# name
+		# 			name = self.check_name_value(findall(r'name=[\'\"](.+?)[\'\"]',inputs,I))
+		# 			# value
+		# 			value = self.check_name_value(findall(r'value=[\'\"](.+?)[\'\"]',inputs,I))
+		# 			print "**********"
+		# 			print name
+		# 			print value
+		# 			name_value = "%s=%s"%(name,value)
+		# 			if len(query) == 0:query.append(name_value)
+		# 			if len(query) == 1:query[0] += "&%s"%(name_value) 
+		# 		except Exception,e:
+		# 			pass
+		# if action:
+		# 	if method.lower() == "get":
+		# 		if query != []:
+		# 			return "%s?%s"%(action,query[0])
+		# 		return action
+		# 	elif method.lower() == "post":
+		# 		if query != []:
+		# 			return action,query[0]
+		# 		return action
 
 	def absolute(self,link):
 		""" make absolute url """
 		link = self.check_ext(link)
 		parts = urlsplit(link)
+		
 		# urlsplit 
 		scheme = ucode(parts.scheme)
 		netloc = ucode(parts.netloc)
