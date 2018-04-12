@@ -44,10 +44,10 @@ class SCrawler(Request):
 				l = self.absolute(link[0])
 				if l and (l,link[1]) not in self.ok_links:
 					self.ok_links.append((l,link[1]))
-			else :
-				l = self.absolute(link)
-				if l and l not in self.ok_links:
-					self.ok_links.append(l)
+			# else :
+			# 	l = self.absolute(link)
+			# 	if l and l not in self.ok_links:
+			# 		self.ok_links.append(l)
 		print self.ok_links
 		return self.ok_links
 

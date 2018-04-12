@@ -11,6 +11,11 @@ from lib.utils.printer import *
 
 class header:
 	def _run_(self,header):
+		# header转化为小写
+		nheader = {}
+		for k in header:
+			nheader[k.lower()] = header[k]
+		header = nheader
 		x_xss(header)
 		x_frame(header)
 		content_type(header)

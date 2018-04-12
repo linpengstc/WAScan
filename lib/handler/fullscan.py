@@ -13,6 +13,7 @@ from lib.handler.brute import *
 from lib.handler.attacks import *
 from lib.handler.disclosure import *
 from lib.handler.fingerprint import *
+from lib.utils.exception import *
 
 def FullScan(kwargs,url,data):
     # 如果是非post格式，并且get请求中不带参数

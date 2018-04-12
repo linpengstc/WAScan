@@ -26,3 +26,10 @@ class WascanGenericException(Exception):
 
 class WascanKeyboardInterrupt(KeyboardInterrupt):
 	pass
+
+# http链接超时
+class HTTPConnectionException(Exception):
+    pass
+
+class ReadTimeoutException(Exception):
+    pass

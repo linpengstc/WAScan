@@ -11,8 +11,12 @@ import socket
 import urllib2
 from lib.utils.printer import *
 import requests
-if hasattr(ssl, '_create_unverified_context'): 
-    ssl._create_default_https_context = ssl._create_unverified_context
+from lib.utils.exception import *
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+# if hasattr(ssl, '_create_unverified_context'): 
+#     ssl._create_default_https_context = ssl._create_unverified_context
 
 def BasicAuthCredentials(creds):
 	# return tuple
@@ -104,14 +108,21 @@ class Request(object):
 			headers[k] = headers[k].strip()
 
 		try:
+			print url
+			print request_args
 			if method == "GET":
-				resp = requests.get(url, **request_args)
+				resp = requests.get(url,verify=False, **request_args)
 			elif method == "POST":
 				if data:
 					request_args['data'] = data
-				resp = requests.post(url, **request_args)
+				resp = requests.post(url, verify=False, **request_args)
 			# other methods
+		except requests.exceptions.ReadTimeout as e:
+			raise ReadTimeoutException( url + ":" + str(e))
+		except requests.exceptions.ConnectionError as e:
+			raise HTTPConnectionException( url + ":" + str(e))
 		except Exception as e:
+			print type(e)
 			import traceback
 			traceback.print_exc(e)
 		return ResponseObject(resp)

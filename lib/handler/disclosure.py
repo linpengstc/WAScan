@@ -14,6 +14,7 @@ from plugins.disclosure.ssn import *
 from lib.request.request import *
 from plugins.disclosure.errors import *
 from lib.utils.printer import *
+from lib.utils.exception import *
 
 class Disclosure(Request):
 	""" Disclosure """
@@ -22,11 +23,16 @@ class Disclosure(Request):
 		self.url = url
 
 	def run(self):
-		info('Starting disclosure module...')
-		req = self.Send(url=self.url,method="GET")
-		creditcards(req.content)
-		emails(req.content)
-		privateip(req.content)
-		ssn(req.content)
-		errors(req.content,req.url)
-		null()
+		try:
+			info('Starting disclosure module...')
+			req = self.Send(url=self.url,method="GET")
+			creditcards(req.content)
+			emails(req.content)
+			privateip(req.content)
+			ssn(req.content)
+			errors(req.content,req.url)
+			null()
+		except HTTPConnectionException,e:
+			warn(str(e))
+		except ReadTimeoutException,e:
+			warn(str(e))

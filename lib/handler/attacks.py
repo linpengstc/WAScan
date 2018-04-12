@@ -21,18 +21,25 @@ from plugins.attacks.sqli import *
 from plugins.attacks.xpathi import *
 from plugins.attacks.xss import *
 from lib.utils.printer import *
+from lib.utils.exception import *
 
 def Attacks(kwargs,url,data):
-	info('Starting attack module...')
-	headersqli(kwargs,url,data).run()
-	bashi(kwargs,url,data).run()
-	htmli(kwargs,url,data).run()
-	ldapi(kwargs,url,data).run()
-	lfi(kwargs,url,data).run()
-	sqli(kwargs,url,data).run()
-	xpathi(kwargs,url,data).run()
-	xss(kwargs,url,data).run()
-	null()
+	try:
+		info('Starting attack module...')
+		headersqli(kwargs,url,data).run()
+		headerxss(kwargs,url,data).run()
+		bashi(kwargs,url,data).run()
+		htmli(kwargs,url,data).run()
+		ldapi(kwargs,url,data).run()
+		lfi(kwargs,url,data).run()
+		sqli(kwargs,url,data).run()
+		xpathi(kwargs,url,data).run()
+		xss(kwargs,url,data).run()
+		null()
+	except HTTPConnectionException,e:
+		warn(str(e))
+	except ReadTimeoutException,e:
+		warn(str(e))
 
 	# headersqli(kwargs,url,data).run()
 	# headerxss(kwargs,url,data).run()

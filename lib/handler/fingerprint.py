@@ -109,7 +109,8 @@ from plugins.fingerprint.waf.wallarm import *
 from plugins.fingerprint.waf.webknight import *
 from plugins.fingerprint.waf.yundun import *
 from plugins.fingerprint.waf.yunsuo import *
-
+from lib.utils.exception import *
+from lib.utils.printer import *
 
 class Fingerprint(Request):
 	"""Fingerprint"""
@@ -146,8 +147,10 @@ class Fingerprint(Request):
 					plus('Web Application Firewall (WAF): %s'%a)
 			checkHeaders(req.headers,req.content)
 			null()
-		except Exception as e:
-			print("Exception: {}".format(e))
+		except HTTPConnectionException,e:
+			warn(str(e))
+		except ReadTimeoutException,e:
+			warn(str(e))
 
 def detectCms(headers,content):
 	return (drupal(headers,content),

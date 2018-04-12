@@ -105,11 +105,16 @@ class wascan(object):
 						FullScan(_kwargs,u[0],_kwargs['data'])
 					else:
 						FullScan(kwargs,u,kwargs['data'])
-				Audit(kwargs,parse.netloc,kwargs['data'])
-				Brute(kwargs,parse.netloc,kwargs['data'])
+				# Audit(kwargs,parse.netloc,kwargs['data'])
+				# Brute(kwargs,parse.netloc,kwargs['data'])
 			
 		except WascanUnboundLocalError,e:
 			pass
+
+		except HTTPConnectionException,e:
+			warn(str(e))
+		except ReadTimeoutException,e:
+			warn(str(e))
 
 if __name__ == "__main__":
 	try:

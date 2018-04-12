@@ -12,14 +12,21 @@ from plugins.brute.backupdir import *
 from plugins.brute.backupfile import *
 from plugins.brute.commondir import *
 from plugins.brute.commonfile import *
+from lib.utils.exception import *
+from lib.utils.printer import *
 
 
 def Brute(kwargs, url, data):
-    info("Starting brute module...")
-    backdoor(kwargs, url, data).run()
-    backupdir(kwargs, url, data).run()
-    backupfile(kwargs, url, data).run()
-    commonfile(kwargs, url, data).run()
-    commondir(kwargs, url, data).run()
-    adminpanel(kwargs, url, data).run()
-    null()
+    try:
+        info("Starting brute module...")
+        backdoor(kwargs, url, data).run()
+        backupdir(kwargs, url, data).run()
+        backupfile(kwargs, url, data).run()
+        commonfile(kwargs, url, data).run()
+        commondir(kwargs, url, data).run()
+        adminpanel(kwargs, url, data).run()
+        null()
+    except HTTPConnectionException,e:
+        warn(str(e))
+    except ReadTimeoutException,e:
+        warn(str(e))

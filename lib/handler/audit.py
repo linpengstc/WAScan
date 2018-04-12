@@ -12,13 +12,19 @@ from plugins.audit.dav import *
 from plugins.audit.phpinfo import *
 from plugins.audit.robots import *
 from lib.utils.printer import *
+from lib.utils.exception import *
 
 
 def Audit(kwargs, url, data):
-    info("Starting audit module...")
-    xst(kwargs, url, data).run()
-    apache(kwargs, url, data).run()
-    # dav(kwargs, url, data).run()
-    phpinfo(kwargs, url, data).run()
-    robots(kwargs, url, data).run()
-    null()
+    try:
+        info("Starting audit module...")
+        xst(kwargs, url, data).run()
+        apache(kwargs, url, data).run()
+        # dav(kwargs, url, data).run()
+        phpinfo(kwargs, url, data).run()
+        robots(kwargs, url, data).run()
+        null()
+    except HTTPConnectionException,e:
+        warn(str(e))
+    except ReadTimeoutException,e:
+        warn(str(e))
